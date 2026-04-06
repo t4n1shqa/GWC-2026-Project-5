@@ -31,22 +31,18 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My History')),
-      backgroundColor: Colors.grey[50],
-      body: Column(
-        children: [
-          // Dev banner
-          Container(
-            width: double.infinity,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: Colors.blue[50],
-            child: const Text(
-              '🔧 Dev note: Showing mock data. Real history → Member 2 (Firestore).',
-              style: TextStyle(fontSize: 12, color: Colors.blue),
-            ),
-          ),
-
+      appBar: AppBar(
+    title: const Text('My History'),
+    bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFBFDBFE),
+        height: 5,
+      ),
+    ),
+  ),
+ body: Column(
+      children: [
           Expanded(
             child: _mockHistory.isEmpty
                 ? const Center(
@@ -80,7 +76,7 @@ class HistoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: Colors.grey[200]!),
                         ),
                         child: Row(
@@ -93,7 +89,7 @@ class HistoryScreen extends StatelessWidget {
                                         .withOpacity(0.1)
                                     : const Color(0xFF059669)
                                         .withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(20),
                               ),
                               child: Icon(
                                 isResume
@@ -156,6 +152,6 @@ class HistoryScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+       );
   }
 }

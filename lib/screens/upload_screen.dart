@@ -77,7 +77,12 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Analyze Resume')),
+      appBar: AppBar(title: const Text('Analyze Resume'),  bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFBFDBFE),
+        height: 5,
+      ),),),
       backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -94,7 +99,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(50),
                   border: Border.all(
                     color: _selectedFileName != null
                         ? const Color(0xFF4F46E5)
@@ -179,7 +184,7 @@ class _UploadScreenState extends State<UploadScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(50),
               ),
               child: const Text(
                 '🔧 Dev note: File picker → Member 4. AI analysis → Member 3. Storage → Member 2.',

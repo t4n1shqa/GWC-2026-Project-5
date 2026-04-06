@@ -29,7 +29,13 @@ class ResultsScreen extends StatelessWidget {
     final keywordsMissing = data['keywords_missing'] as List;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Analysis Results')),
+      appBar: AppBar(title: const Text('Analysis Results'),
+       bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFBFDBFE),
+        height: 5,
+      ),),),
       backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -43,7 +49,7 @@ class ResultsScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(50),
                   border: Border.all(color: Colors.orange[200]!),
                 ),
                 child: const Text(
@@ -59,7 +65,7 @@ class ResultsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                     colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)]),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(50),
               ),
               child: Column(
                 children: [
@@ -75,7 +81,7 @@ class ResultsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(50),
                     child: LinearProgressIndicator(
                       value: score / 100,
                       backgroundColor: Colors.white24,
@@ -187,7 +193,7 @@ class _SuggestionCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(50),
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: Row(
@@ -219,7 +225,7 @@ class _KeywordChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: found ? Colors.green[50] : Colors.red[50],
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(50),
         border: Border.all(
             color: found ? Colors.green[300]! : Colors.red[300]!),
       ),

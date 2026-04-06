@@ -121,7 +121,17 @@ class _InterviewScreenState extends State<InterviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mock Interview')),
+      appBar: AppBar(
+        title: const Text('Mock Interview'), 
+         bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFBFDBFE),
+        height: 5,
+      ),
+      ),
+      ),
+      
       backgroundColor: Colors.grey[50],
       body: _sessionStarted ? _buildSession() : _buildSetup(),
     );
@@ -138,7 +148,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: const Color(0xFF059669).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(50),
               border: Border.all(
                   color: const Color(0xFF059669).withOpacity(0.3)),
             ),
@@ -217,7 +227,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(50),
             ),
             child: const Text(
               '🔧 Dev note: Real question generation → Member 3\'s task.',
@@ -255,7 +265,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
           ),
           const SizedBox(height: 8),
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(50),
             child: LinearProgressIndicator(
               value:
                   (_currentQuestionIndex + 1) / _mockQuestions.length,
@@ -273,7 +283,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(50),
               border:
                   Border.all(color: const Color(0xFF059669).withOpacity(0.3)),
               boxShadow: [
@@ -349,7 +359,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: Colors.green[50],
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(50),
                 border: Border.all(color: Colors.green[200]!),
               ),
               child: Column(

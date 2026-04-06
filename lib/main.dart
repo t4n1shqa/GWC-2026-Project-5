@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/splash_screen.dart';
+ import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,10 +26,11 @@ class MyApp extends StatelessWidget {
       title: 'Resume Coach',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4F46E5)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3382EC)),
         useMaterial3: true,
+         textTheme: GoogleFonts.poppinsTextTheme(),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF4F46E5),
+          backgroundColor: Color(0xFF3382EC),
           foregroundColor: Colors.white,
           elevation: 0,
         ),
@@ -38,13 +40,13 @@ class MyApp extends StatelessWidget {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(50),
             ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(50),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
