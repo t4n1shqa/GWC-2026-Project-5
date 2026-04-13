@@ -33,7 +33,7 @@ class ResultsScreen extends StatelessWidget {
        bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
-        color: const Color(0xFFCBEAFF),
+        color: const Color(0xFF80B8F6),
         height: 5,
       ),),),
       backgroundColor: Colors.grey[50],
@@ -44,7 +44,10 @@ class ResultsScreen extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
-              color: Color(0xFFCBEAFF),
+             color: Color(0xFFCBEAFF),
+             border: Border(
+              bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5),
+             ),
             ),
             child: Column(
               children: [

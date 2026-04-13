@@ -75,9 +75,20 @@ class HistoryScreen extends StatelessWidget {
                       return Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey[200]!),
+                          color: const Color(0xFFCBEAFF),
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFF7BBFEE),
+                              offset: Offset(0, 4),
+                              blurRadius: 0,
+                            ),
+                            BoxShadow(
+                              color: Color(0xFFEEF8FF),
+                              offset: Offset(0, -4),
+                              blurRadius: 0,
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [

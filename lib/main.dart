@@ -45,11 +45,18 @@ class MyApp extends StatelessWidget {
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
+          filled: true,
+          fillColor: const Color(0xFFE8F5FF),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: const BorderSide(color: Color(0xFF3382EC), width: 1.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: const BorderSide(color: Color(0xFF3382EC), width: 2),
+          ),
         ),
       ),
       home: const SplashScreen(),
