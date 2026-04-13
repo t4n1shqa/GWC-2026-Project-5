@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
          bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
-        color: const Color(0xFFBFDBFE), // change this per page
+        color: const Color(0xFFCBEAFF), // change this per page
         height: 5,
       ),
     ),
@@ -151,17 +151,22 @@ class _FeatureCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: const Color(0xFFDBEAFE),
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(color: Colors.grey[200]!),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2)),
-          ],
-        ),
+         decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(50),
+    color: const Color(0xFFCBEAFF),
+    boxShadow: const [
+      BoxShadow(
+        color: Color(0xFF7BBFEE),
+        offset: Offset(0, 4),
+        blurRadius: 0,
+      ),
+      BoxShadow(
+        color: Color(0xFFEEF8FF),
+        offset: Offset(0, -4),
+        blurRadius: 0,
+      ),
+    ],
+  ),
         child: Row(
           children: [
             Container(
@@ -169,6 +174,14 @@ class _FeatureCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(50),
+                 boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.1),
+        blurRadius: 6,
+        offset: const Offset(0, 4),
+        blurStyle: BlurStyle.inner,
+      ),
+    ],
               ),
               child: Icon(icon, color: color, size: 28),
             ),

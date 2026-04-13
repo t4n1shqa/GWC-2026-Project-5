@@ -80,7 +80,7 @@ class _UploadScreenState extends State<UploadScreen> {
       appBar: AppBar(title: const Text('Analyze Resume'),  bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
-        color: const Color(0xFFBFDBFE),
+        color: const Color(0xFFCBEAFF),
         height: 5,
       ),),),
       backgroundColor: Colors.grey[50],
@@ -158,16 +158,31 @@ class _UploadScreenState extends State<UploadScreen> {
             const SizedBox(height: 28),
 
             // Analyze button
-            SizedBox(
+            Container(
               width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF7BBFEE),
+                    offset: Offset(0, 4),
+                    blurRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0xFFEEF8FF),
+                    offset: Offset(0, -4),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _analyzeResume,
+                style: ElevatedButton.styleFrom(elevation: 0),
                 icon: _isLoading
                     ? const SizedBox(
                         height: 18,
                         width: 18,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.auto_awesome_rounded),
                 label: Text(

@@ -36,7 +36,7 @@ class HistoryScreen extends StatelessWidget {
     bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
-        color: const Color(0xFFBFDBFE),
+        color: const Color(0xFFCBEAFF),
         height: 5,
       ),
     ),

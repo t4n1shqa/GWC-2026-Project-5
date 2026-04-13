@@ -126,7 +126,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
          bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
-        color: const Color(0xFFBFDBFE),
+        color: const Color(0xFFCBEAFF),
         height: 5,
       ),
       ),
