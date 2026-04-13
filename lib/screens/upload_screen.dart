@@ -158,16 +158,8 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 boxShadow: const [
-                  BoxShadow(
-                    color: Color(0xFF7BBFEE),
-                    offset: Offset(0, 4),
-                    blurRadius: 0,
-                  ),
-                  BoxShadow(
-                    color: Color(0xFFEEF8FF),
-                    offset: Offset(0, -4),
-                    blurRadius: 0,
-                  ),
+                  BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
+                  BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
                 ],
               ),
               child: ElevatedButton.icon(
