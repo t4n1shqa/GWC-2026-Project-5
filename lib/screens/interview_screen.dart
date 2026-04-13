@@ -19,7 +19,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
   final _answerController = TextEditingController();
   Map<String, dynamic>? _feedback;
 
-  // Mock questions — replace with real AI-generated questions (Member 3)
   final List<String> _mockQuestions = [
     'Tell me about yourself and why you\'re interested in this role.',
     'Describe a challenging project you worked on and how you handled it.',
@@ -41,7 +40,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
     // TODO (Member 3): Replace with real call:
     // final questions = await AiService().generateInterviewQuestions(
     //   _jobTitleController.text, _jobDescController.text);
-    // setState(() { _questions = questions; _sessionStarted = true; });
 
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
@@ -62,11 +60,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
 
     setState(() => _isLoading = true);
 
-    // TODO (Member 3): Replace with real feedback call:
-    // final feedback = await AiService().getAnswerFeedback(
-    //   question: _mockQuestions[_currentQuestionIndex],
-    //   answer: _answerController.text,
-    // );
+    // TODO (Member 3): Replace with real feedback call
 
     await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
@@ -130,7 +124,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
           child: Container(
             color: const Color(0xFF7BBFEE),
             height: 5,
-            
           ),
         ),
       ),
@@ -150,7 +143,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
           decoration: const BoxDecoration(
             color: Color(0xFFCBEAFF),
             border: Border(
-              bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5),
+              bottom: BorderSide(color: Color(0xFF7BBFEE), width: 5),
             ),
           ),
           child: const Row(
@@ -181,54 +174,51 @@ class _InterviewScreenState extends State<InterviewScreen> {
               children: [
                 const SizedBox(height: 4),
 
-          const Text('Job Title *',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-          const SizedBox(height: 6),
-          TextField(
-            controller: _jobTitleController,
-            decoration: const InputDecoration(
-              hintText: 'e.g. Software Engineer Intern',
-              prefixIcon: Icon(Icons.work_outline),
-            ),
-          ),
-          const SizedBox(height: 18),
+                const Text('Job Title *',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _jobTitleController,
+                  decoration: const InputDecoration(
+                    hintText: 'e.g. Software Engineer Intern',
+                    prefixIcon: Icon(Icons.work_outline),
+                  ),
+                ),
+                const SizedBox(height: 18),
 
-          const Text('Job Description (optional)',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-          const SizedBox(height: 6),
-          TextField(
-            controller: _jobDescController,
-            maxLines: 4,
-            decoration: const InputDecoration(
-              hintText: 'Paste job description for more tailored questions...',
-            ),
-          ),
-          const SizedBox(height: 28),
+                const Text('Job Description (optional)',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _jobDescController,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    hintText: 'Paste job description for more tailored questions...',
+                  ),
+                ),
+                const SizedBox(height: 28),
 
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: const [
-                BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
-                BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
-              ],
-            ),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _startSession,
-              style: ElevatedButton.styleFrom(elevation: 0),
-              icon: _isLoading
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.play_arrow_rounded),
-              label: Text(
-                _isLoading ? 'Generating questions...' : 'Start Interview',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: const [
+                      BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
+                      BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
+                    ],
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading ? null : _startSession,
+                    style: ElevatedButton.styleFrom(elevation: 0),
+                    icon: _isLoading
+                        ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.play_arrow_rounded),
+                    label: Text(
+                      _isLoading ? 'Generating questions...' : 'Start Interview',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -240,44 +230,77 @@ class _InterviewScreenState extends State<InterviewScreen> {
   Widget _buildSession() {
     return Column(
       children: [
-        // Step indicator panel
+        // Step indicator panel — circles, question, overall score
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
             color: Color(0xFFCBEAFF),
             border: Border(
               bottom: BorderSide(color: Color(0xFF7BBFEE), width: 5),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_mockQuestions.length, (i) {
-              final isActive = i == _currentQuestionIndex;
-              final isPast = i < _currentQuestionIndex;
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 6),
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isActive || isPast
-                      ? const Color(0xFF3382EC)
-                      : Colors.white,
-                  border: Border.all(color: const Color(0xFF3382EC), width: 2),
-                ),
-                child: Center(
-                  child: Text(
-                    '${i + 1}',
-                    style: TextStyle(
-                      color: isActive || isPast ? Colors.white : const Color(0xFF3382EC),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Step circles
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(_mockQuestions.length, (i) {
+                  final isActive = i == _currentQuestionIndex;
+                  final isPast = i < _currentQuestionIndex;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isActive || isPast ? const Color(0xFF3382EC) : Colors.white,
+                      border: Border.all(color: const Color(0xFF3382EC), width: 2),
                     ),
-                  ),
+                    child: Center(
+                      child: Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          color: isActive || isPast ? Colors.white : const Color(0xFF3382EC),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 12),
+              // Question text
+              Text(
+                _mockQuestions[_currentQuestionIndex],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1E1B4B),
+                    height: 1.5),
+              ),
+              // Overall score — shown after feedback is returned
+              if (_feedback != null) ...[
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Overall Score  ',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E1B4B))),
+                    ...List.generate(5, (i) => Icon(
+                      i < (_feedback!['overall_score'] as int)
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      color: Colors.amber,
+                      size: 24,
+                    )),
+                  ],
                 ),
-              );
-            }),
+              ],
+            ],
           ),
         ),
 
@@ -289,40 +312,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-
-                // Question card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFCBEAFF),
-                    borderRadius: BorderRadius.circular(50),
-                    boxShadow: const [
-                      BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
-                      BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Question',
-                          style: TextStyle(
-                              color: Color(0xFF3382EC),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Text(
-                        _mockQuestions[_currentQuestionIndex],
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF1E1B4B),
-                            height: 1.5),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
 
                 // Answer input
                 const Text('Your Answer',
@@ -351,10 +340,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                       onPressed: _isLoading ? null : _submitAnswer,
                       style: ElevatedButton.styleFrom(elevation: 0),
                       icon: _isLoading
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.send_rounded),
                       label: Text(
                         _isLoading ? 'Getting feedback...' : 'Submit Answer',
@@ -366,41 +352,6 @@ class _InterviewScreenState extends State<InterviewScreen> {
                 // Feedback section
                 if (_feedback != null) ...[
                   const SizedBox(height: 20),
-
-                  // Overall Score
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCBEAFF),
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: const [
-                        BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
-                        BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const Text('Overall Score',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E1B4B),
-                                fontSize: 15)),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(5, (i) => Icon(
-                            i < (_feedback!['overall_score'] as int)
-                                ? Icons.star_rounded
-                                : Icons.star_border_rounded,
-                            color: Colors.amber,
-                            size: 28,
-                          )),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
 
                   // Response text area
                   Container(
@@ -423,31 +374,38 @@ class _InterviewScreenState extends State<InterviewScreen> {
                     (_feedback!['items'] as List).length,
                     (i) {
                       final item = (_feedback!['items'] as List)[i] as Map;
-                      return Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFCBEAFF),
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: const [
-                            BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 3), blurRadius: 0),
-                            BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -3), blurRadius: 0),
-                          ],
-                        ),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
                         child: Row(
                           children: [
-                            Text('${i + 1}  ${item['label']}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 13)),
-                            const Spacer(),
-                            ...List.generate(5, (s) => Icon(
-                              s < (item['score'] as int)
-                                  ? Icons.star_rounded
-                                  : Icons.star_border_rounded,
-                              color: Colors.amber,
-                              size: 18,
-                            )),
+                            // Label bubble
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFCBEAFF),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Text('${i + 1}  ${item['label']}',
+                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                            ),
+                            const SizedBox(width: 8),
+                            // Stars bubble
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFCBEAFF),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Row(
+                                children: List.generate(5, (s) => Icon(
+                                  s < (item['score'] as int)
+                                      ? Icons.star_rounded
+                                      : Icons.star_border_rounded,
+                                  color: Colors.amber,
+                                  size: 18,
+                                )),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -470,6 +428,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
