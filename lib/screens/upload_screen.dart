@@ -79,7 +79,12 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
     final isLoading = state.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Analyze Resume')),
+      appBar: AppBar(title: const Text('Analyze Resume'),  bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFCBEAFF),
+        height: 5,
+      ),),),
       backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -95,7 +100,7 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(50),
                   border: Border.all(
                     color: _selectedFileName != null
                         ? const Color(0xFF4F46E5)
@@ -150,14 +155,29 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
 
             SizedBox(
               width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF7BBFEE),
+                    offset: Offset(0, 4),
+                    blurRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0xFFEEF8FF),
+                    offset: Offset(0, -4),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
               child: ElevatedButton.icon(
-                onPressed: isLoading ? null : _analyzeResume,
-                icon: isLoading
+                onPressed: _isLoading ? null : _analyzeResume,
+                style: ElevatedButton.styleFrom(elevation: 0),
+                icon: _isLoading
                     ? const SizedBox(
                         height: 18,
                         width: 18,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.auto_awesome_rounded),
                 label: Text(

@@ -34,6 +34,13 @@ class HomeScreen extends StatelessWidget {
             onPressed: () => _handleLogout(context),
           ),
         ],
+         bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(4),
+      child: Container(
+        color: const Color(0xFFCBEAFF), // change this per page
+        height: 5,
+      ),
+    ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -48,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                 gradient: const LinearGradient(
                   colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(50),
               ),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,31 +122,7 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const HistoryScreen()),
               ),
             ),
-            const SizedBox(height: 28),
-
-            // Status banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.orange[200]!),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.construction_rounded,
-                      color: Colors.orange, size: 20),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '🚧 This is the dev template. Features will be added by the team.',
-                      style: TextStyle(color: Colors.orange, fontSize: 13),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+           
           ],
         ),
       ),
@@ -168,24 +151,37 @@ class _FeatureCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey[200]!),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2)),
-          ],
-        ),
+         decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(50),
+    color: const Color(0xFFCBEAFF),
+    boxShadow: const [
+      BoxShadow(
+        color: Color(0xFF7BBFEE),
+        offset: Offset(0, 4),
+        blurRadius: 0,
+      ),
+      BoxShadow(
+        color: Color(0xFFEEF8FF),
+        offset: Offset(0, -4),
+        blurRadius: 0,
+      ),
+    ],
+  ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(50),
+                 boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.1),
+        blurRadius: 6,
+        offset: const Offset(0, 4),
+        blurStyle: BlurStyle.inner,
+      ),
+    ],
               ),
               child: Icon(icon, color: color, size: 28),
             ),
