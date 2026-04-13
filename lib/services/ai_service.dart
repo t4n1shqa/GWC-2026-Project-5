@@ -27,23 +27,23 @@ class AIService {
     }
   }
 
-  // resume review endpoint
-  static Future<String> reviewResume(List<int> pdfBytes) async {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/resume-review'),
-    );
-    request.files.add(http.MultipartFile.fromBytes('file', pdfBytes, filename: 'resume.pdf'),);
+static Future<Map<String, dynamic>> reviewResume(List<int> pdfBytes) async {
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('$baseUrl/resume-review'),
+  );
+  request.files.add(
+    http.MultipartFile.fromBytes('file', pdfBytes, filename: 'resume.pdf'),
+  );
 
-    final response = await request.send();
-    final body = await response.stream.bytesToString();
+  final response = await request.send();
+  final body = await response.stream.bytesToString();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(body);
-      return data["feedback"];
-    } else {
-      throw Exception("Failed to review resume: $body");
-    }
+  if (response.statusCode == 200) {
+    return jsonDecode(body) as Map<String, dynamic>; // ← return the whole map
+  } else {
+    throw Exception("Failed to review resume: $body");
   }
+}
 
 }
