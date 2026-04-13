@@ -1,37 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:file_picker/file_picker.dart';
+import '../providers/resume_provider.dart';
 import 'results_screen.dart';
 
-// TODO (Member 4): Wire up file_picker here
-// TODO (Member 3): Call AiService.analyzeResume() after file is picked
-// TODO (Member 2): Call StorageService.uploadResume() after file is picked
-
-class UploadScreen extends StatefulWidget {
+class UploadScreen extends ConsumerStatefulWidget {  
   const UploadScreen({super.key});
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  ConsumerState<UploadScreen> createState() => _UploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
+class _UploadScreenState extends ConsumerState<UploadScreen> {  
   final _jobDescController = TextEditingController();
-  bool _isLoading = false;
   String? _selectedFileName;
+  List<int>? _pdfBytes;  // ← store the actual file bytes
 
-  void _pickFile() {
-    // TODO (Member 4): Replace with real file picker:
-    // final file = await FileService().pickResumePDF();
-    // if (file != null) setState(() => _selectedFileName = file.path.split('/').last);
-
-    // Mock file selection for now
-    setState(() => _selectedFileName = 'my_resume.pdf');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('📎 File picker coming soon (Member 4\'s task)')),
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+      withData: true,  // ← gives us the bytes directly
     );
+
+    if (result != null && result.files.single.bytes != null) {
+      setState(() {
+        _selectedFileName = result.files.single.name;
+        _pdfBytes = result.files.single.bytes!.toList();
+      });
+    }
   }
 
   Future<void> _analyzeResume() async {
-    if (_selectedFileName == null) {
+    if (_pdfBytes == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please upload a resume first.')),
       );
@@ -45,26 +46,24 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-
-    // TODO (Member 3): Replace with real Gemini call:
-    // final result = await AiService().analyzeResume(resumeText, jobDesc);
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => ResultsScreen(data: result)));
-
-    // Mock delay to simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    // Call the provider which calls AiService
+    await ref.read(resumeProvider.notifier).analyzeResume(_pdfBytes!);
 
     if (!mounted) return;
-    setState(() => _isLoading = false);
 
-    // Navigate to results with mock data
+    // Check if it errored
+    final state = ref.read(resumeProvider);
+    if (state.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${state.error}')),
+      );
+      return;
+    }
+
+    // Navigate to results
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const ResultsScreen(
-          mockMode: true,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => const ResultsScreen()),
     );
   }
 
@@ -76,6 +75,9 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(resumeProvider);  // ← watch for loading state
+    final isLoading = state.isLoading;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Analyze Resume')),
       backgroundColor: Colors.grey[50],
@@ -84,7 +86,6 @@ class _UploadScreenState extends State<UploadScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Step 1 - Upload
             _SectionLabel(number: '1', title: 'Upload Your Resume'),
             const SizedBox(height: 12),
             GestureDetector(
@@ -126,11 +127,8 @@ class _UploadScreenState extends State<UploadScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _selectedFileName != null
-                          ? 'Tap to change file'
-                          : 'PDF files only',
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
+                      _selectedFileName != null ? 'Tap to change file' : 'PDF files only',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -138,26 +136,23 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Step 2 - Job description
             _SectionLabel(number: '2', title: 'Paste Job Description'),
             const SizedBox(height: 12),
             TextField(
               controller: _jobDescController,
               maxLines: 6,
               decoration: const InputDecoration(
-                hintText:
-                    'Paste the job description you\'re applying for here...',
+                hintText: 'Paste the job description you\'re applying for here...',
                 alignLabelWithHint: true,
               ),
             ),
             const SizedBox(height: 28),
 
-            // Analyze button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isLoading ? null : _analyzeResume,
-                icon: _isLoading
+                onPressed: isLoading ? null : _analyzeResume,
+                icon: isLoading
                     ? const SizedBox(
                         height: 18,
                         width: 18,
@@ -166,24 +161,9 @@ class _UploadScreenState extends State<UploadScreen> {
                       )
                     : const Icon(Icons.auto_awesome_rounded),
                 label: Text(
-                  _isLoading ? 'Analyzing...' : 'Analyze with AI',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                  isLoading ? 'Analyzing...' : 'Analyze with AI',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Dev note
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                '🔧 Dev note: File picker → Member 4. AI analysis → Member 3. Storage → Member 2.',
-                style: TextStyle(fontSize: 12, color: Colors.blue),
               ),
             ),
           ],
@@ -193,6 +173,7 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 }
 
+// _SectionLabel widget stays exactly the same as before
 class _SectionLabel extends StatelessWidget {
   final String number;
   final String title;

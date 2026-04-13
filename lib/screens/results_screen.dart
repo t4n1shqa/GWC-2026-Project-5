@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/resume_provider.dart';
 
-// TODO (Member 3): Replace mockMode with real data from AiService.analyzeResume()
-// Pass the result map into this screen as a constructor parameter
-
-class ResultsScreen extends StatelessWidget {
-  final bool mockMode;
-
-  const ResultsScreen({super.key, this.mockMode = false});
-
-  // Mock data — replace with real AI response when Member 3 is done
-  Map<String, dynamic> get _mockData => {
-        'score': 72,
-        'suggestions': [
-          'Add measurable achievements (e.g. "increased sales by 30%")',
-          'Include more keywords from the job description',
-          'Strengthen your summary section with specific skills',
-        ],
-        'keywords_found': ['Flutter', 'Dart', 'Firebase', 'Git'],
-        'keywords_missing': ['CI/CD', 'REST APIs', 'Agile', 'Unit Testing'],
-      };
+class ResultsScreen extends ConsumerWidget {
+  const ResultsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final data = _mockData;
-    final score = data['score'] as int;
-    final suggestions = data['suggestions'] as List;
-    final keywordsFound = data['keywords_found'] as List;
-    final keywordsMissing = data['keywords_missing'] as List;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(resumeProvider);
+
+    // Show loading spinner
+    if (state.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Show error
+    if (state.error != null) {
+      return Scaffold(
+        body: Center(child: Text('Error: ${state.error}')),
+      );
+    }
+
+    final score = state.score;
+    final suggestions = state.suggestions;
+    final keywordsFound = state.keywordsFound;
+    final keywordsMissing = state.keywordsMissing;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Analysis Results')),
@@ -36,22 +36,6 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (mockMode)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange[200]!),
-                ),
-                child: const Text(
-                  '🔧 Showing mock data. Real AI results coming from Member 3.',
-                  style: TextStyle(fontSize: 12, color: Colors.orange),
-                ),
-              ),
-
             // Score card
             Container(
               width: double.infinity,
@@ -95,7 +79,7 @@ class ResultsScreen extends StatelessWidget {
                 title: 'Suggestions',
                 color: Colors.amber[700]!),
             const SizedBox(height: 10),
-            ...suggestions.map((s) => _SuggestionCard(text: s.toString())),
+            ...suggestions.map((s) => _SuggestionCard(text: s)),
             const SizedBox(height: 24),
 
             // Keywords found
@@ -108,8 +92,7 @@ class ResultsScreen extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: keywordsFound
-                  .map((k) => _KeywordChip(
-                      label: k.toString(), found: true))
+                  .map((k) => _KeywordChip(label: k, found: true))
                   .toList(),
             ),
             const SizedBox(height: 24),
@@ -124,8 +107,7 @@ class ResultsScreen extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: keywordsMissing
-                  .map((k) => _KeywordChip(
-                      label: k.toString(), found: false))
+                  .map((k) => _KeywordChip(label: k, found: false))
                   .toList(),
             ),
             const SizedBox(height: 30),
