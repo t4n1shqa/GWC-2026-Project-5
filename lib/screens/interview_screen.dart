@@ -16,8 +16,10 @@ class _InterviewScreenState extends State<InterviewScreen> {
   bool _sessionStarted = false;
   bool _isLoading = false;
   int _currentQuestionIndex = 0;
+  int _viewingIndex = 0;
   final _answerController = TextEditingController();
-  Map<String, dynamic>? _feedback;
+  final List<Map<String, dynamic>?> _allFeedback = [null, null, null, null, null];
+  final List<String?> _allAnswers = [null, null, null, null, null];
 
   final List<String> _mockQuestions = [
     'Tell me about yourself and why you\'re interested in this role.',
@@ -47,6 +49,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
       _isLoading = false;
       _sessionStarted = true;
       _currentQuestionIndex = 0;
+      _viewingIndex = 0;
     });
   }
 
@@ -66,7 +69,8 @@ class _InterviewScreenState extends State<InterviewScreen> {
     if (!mounted) return;
     setState(() {
       _isLoading = false;
-      _feedback = {
+      _allAnswers[_currentQuestionIndex] = _answerController.text;
+      _allFeedback[_currentQuestionIndex] = {
         'overall_score': 3,
         'response': 'Your answer demonstrated good understanding of the topic. You communicated your experience clearly and showed relevant skills.',
         'items': [
@@ -83,8 +87,8 @@ class _InterviewScreenState extends State<InterviewScreen> {
     if (_currentQuestionIndex < _mockQuestions.length - 1) {
       setState(() {
         _currentQuestionIndex++;
+        _viewingIndex = _currentQuestionIndex;
         _answerController.clear();
-        _feedback = null;
       });
     } else {
       showDialog(
@@ -122,7 +126,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4),
           child: Container(
-            color: const Color(0xFF7BBFEE),
+            color: const Color(0xFF80B8F6),
             height: 5,
           ),
         ),
@@ -143,7 +147,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
           decoration: const BoxDecoration(
             color: Color(0xFFCBEAFF),
             border: Border(
-              bottom: BorderSide(color: Color(0xFF7BBFEE), width: 5),
+              bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5),
             ),
           ),
           child: const Row(
@@ -228,6 +232,9 @@ class _InterviewScreenState extends State<InterviewScreen> {
   }
 
   Widget _buildSession() {
+    final isViewingPast = _viewingIndex < _currentQuestionIndex;
+    final viewedFeedback = _allFeedback[_viewingIndex];
+
     return Column(
       children: [
         // Step indicator panel — circles, question, overall score
@@ -237,7 +244,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
           decoration: const BoxDecoration(
             color: Color(0xFFCBEAFF),
             border: Border(
-              bottom: BorderSide(color: Color(0xFF7BBFEE), width: 5),
+              bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5),
             ),
           ),
           child: Column(
@@ -249,22 +256,39 @@ class _InterviewScreenState extends State<InterviewScreen> {
                 children: List.generate(_mockQuestions.length, (i) {
                   final isActive = i == _currentQuestionIndex;
                   final isPast = i < _currentQuestionIndex;
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive || isPast ? const Color(0xFF3382EC) : Colors.white,
-                      border: Border.all(color: const Color(0xFF3382EC), width: 2),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${i + 1}',
-                        style: TextStyle(
-                          color: isActive || isPast ? Colors.white : const Color(0xFF3382EC),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                  return GestureDetector(
+                    onTap: isPast
+                        ? () => setState(() => _viewingIndex = i)
+                        : isActive
+                            ? () => setState(() => _viewingIndex = _currentQuestionIndex)
+                            : null,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isActive
+                            ? const Color(0xFF3382EC)
+                            : isPast
+                                ? const Color(0xFFCBEAFF)
+                                : Colors.white,
+                        border: isPast ? null : Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                        boxShadow: isPast
+                            ? const [
+                                BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 3), blurRadius: 0),
+                                BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -3), blurRadius: 0),
+                              ]
+                            : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${i + 1}',
+                          style: TextStyle(
+                            color: isActive ? Colors.white : const Color(0xFF3382EC),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
@@ -274,7 +298,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
               const SizedBox(height: 12),
               // Question text
               Text(
-                _mockQuestions[_currentQuestionIndex],
+                _mockQuestions[_viewingIndex],
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 15,
@@ -283,7 +307,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                     height: 1.5),
               ),
               // Overall score — shown after feedback is returned
-              if (_feedback != null) ...[
+              if (viewedFeedback != null) ...[
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -291,10 +315,10 @@ class _InterviewScreenState extends State<InterviewScreen> {
                     const Text('Overall Score  ',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E1B4B))),
                     ...List.generate(5, (i) => Icon(
-                      i < (_feedback!['overall_score'] as int)
+                      i < (viewedFeedback['overall_score'] as int)
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
-                      color: Colors.amber,
+                      color: const Color(0xFF3382EC),
                       size: 24,
                     )),
                   ],
@@ -313,20 +337,100 @@ class _InterviewScreenState extends State<InterviewScreen> {
               children: [
                 const SizedBox(height: 4),
 
-                // Answer input
-                const Text('Your Answer',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _answerController,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    hintText: 'Type your answer here...',
-                  ),
-                ),
-                const SizedBox(height: 16),
+                if (isViewingPast) ...[
+                  // Viewing a past question — show stored feedback + back button
+                  if (_allAnswers[_viewingIndex] != null) ...[
+                    const Text('Your Answer',
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5FF),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                      ),
+                      child: Text(
+                        _allAnswers[_viewingIndex]!,
+                        style: const TextStyle(fontSize: 13, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  if (viewedFeedback != null) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5FF),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                      ),
+                      child: Text(
+                        viewedFeedback['response'] as String,
+                        style: const TextStyle(fontSize: 13, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
-                if (_feedback == null)
+                    ...List.generate(
+                      (viewedFeedback['items'] as List).length,
+                      (i) {
+                        final item = (viewedFeedback['items'] as List)[i] as Map;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCBEAFF),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text('${i + 1}  ${item['label']}',
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCBEAFF),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Row(
+                                  children: List.generate(5, (s) => Icon(
+                                    s < (item['score'] as int)
+                                        ? Icons.star_rounded
+                                        : Icons.star_border_rounded,
+                                    color: const Color(0xFF3382EC),
+                                    size: 18,
+                                  )),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 4),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5FF),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                      ),
+                      child: Text(
+                        viewedFeedback['feedback'] as String,
+                        style: const TextStyle(fontSize: 13, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -337,118 +441,147 @@ class _InterviewScreenState extends State<InterviewScreen> {
                       ],
                     ),
                     child: ElevatedButton.icon(
-                      onPressed: _isLoading ? null : _submitAnswer,
+                      onPressed: () => setState(() => _viewingIndex = _currentQuestionIndex),
                       style: ElevatedButton.styleFrom(elevation: 0),
-                      icon: _isLoading
-                          ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.send_rounded),
-                      label: Text(
-                        _isLoading ? 'Getting feedback...' : 'Submit Answer',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: const Text(
+                        'Back to Current Question',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-
-                // Feedback section
-                if (_feedback != null) ...[
-                  const SizedBox(height: 20),
-
-                  // Response text area
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5FF),
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
-                    ),
-                    child: Text(
-                      _feedback!['response'] as String,
-                      style: const TextStyle(fontSize: 13, height: 1.5),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Per-item ratings
-                  ...List.generate(
-                    (_feedback!['items'] as List).length,
-                    (i) {
-                      final item = (_feedback!['items'] as List)[i] as Map;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            // Label bubble
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFCBEAFF),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text('${i + 1}  ${item['label']}',
-                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                            ),
-                            const SizedBox(width: 8),
-                            // Stars bubble
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFCBEAFF),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Row(
-                                children: List.generate(5, (s) => Icon(
-                                  s < (item['score'] as int)
-                                      ? Icons.star_rounded
-                                      : Icons.star_border_rounded,
-                                  color: Colors.amber,
-                                  size: 18,
-                                )),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Feedback text area
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5FF),
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
-                    ),
-                    child: Text(
-                      _feedback!['feedback'] as String,
-                      style: const TextStyle(fontSize: 13, height: 1.5),
+                ] else ...[
+                  // Current question — answer input + submit / feedback
+                  const Text('Your Answer',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _answerController,
+                    maxLines: 5,
+                    decoration: const InputDecoration(
+                      hintText: 'Type your answer here...',
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: const [
-                        BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
-                        BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: _nextQuestion,
-                      style: ElevatedButton.styleFrom(elevation: 0),
-                      child: Text(
-                        _currentQuestionIndex < _mockQuestions.length - 1
-                            ? 'Next Question →'
-                            : 'Finish Session 🎉',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  if (viewedFeedback == null)
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: const [
+                          BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
+                          BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: _isLoading ? null : _submitAnswer,
+                        style: ElevatedButton.styleFrom(elevation: 0),
+                        icon: _isLoading
+                            ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Icon(Icons.send_rounded),
+                        label: Text(
+                          _isLoading ? 'Getting feedback...' : 'Submit Answer',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                  ),
+
+                  if (viewedFeedback != null) ...[
+                    const SizedBox(height: 20),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5FF),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                      ),
+                      child: Text(
+                        viewedFeedback['response'] as String,
+                        style: const TextStyle(fontSize: 13, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    ...List.generate(
+                      (viewedFeedback['items'] as List).length,
+                      (i) {
+                        final item = (viewedFeedback['items'] as List)[i] as Map;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCBEAFF),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text('${i + 1}  ${item['label']}',
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFCBEAFF),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Row(
+                                  children: List.generate(5, (s) => Icon(
+                                    s < (item['score'] as int)
+                                        ? Icons.star_rounded
+                                        : Icons.star_border_rounded,
+                                    color: const Color(0xFF3382EC),
+                                    size: 18,
+                                  )),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 4),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5FF),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                      ),
+                      child: Text(
+                        viewedFeedback['feedback'] as String,
+                        style: const TextStyle(fontSize: 13, height: 1.5),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: const [
+                          BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
+                          BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _nextQuestion,
+                        style: ElevatedButton.styleFrom(elevation: 0),
+                        child: Text(
+                          _currentQuestionIndex < _mockQuestions.length - 1
+                              ? 'Next Question →'
+                              : 'Finish Session 🎉',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ],
             ),

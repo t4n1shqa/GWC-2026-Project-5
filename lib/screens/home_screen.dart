@@ -42,43 +42,12 @@ class HomeScreen extends StatelessWidget {
       ),
     ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Welcome banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
-                ),
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hi there 👋',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    // TODO (Member 2): Replace with real user name
-                    // 'Welcome back, ${user?.displayName}',
-                    'Ready to land your next job?',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 28),
-
             const Text(
               'What would you like to do?',
               style: TextStyle(
@@ -87,9 +56,6 @@ class HomeScreen extends StatelessWidget {
                 color: Color(0xFF1E1B4B),
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Feature cards
             _FeatureCard(
               icon: Icons.upload_file_rounded,
               title: 'Analyze My Resume',
@@ -100,7 +66,6 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const UploadScreen()),
               ),
             ),
-            const SizedBox(height: 14),
             _FeatureCard(
               icon: Icons.mic_rounded,
               title: 'Mock Interview',
@@ -111,7 +76,6 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const InterviewScreen()),
               ),
             ),
-            const SizedBox(height: 14),
             _FeatureCard(
               icon: Icons.history_rounded,
               title: 'My History',
@@ -122,7 +86,6 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const HistoryScreen()),
               ),
             ),
-           
           ],
         ),
       ),

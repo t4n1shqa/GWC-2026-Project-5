@@ -153,7 +153,7 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
             ),
             const SizedBox(height: 28),
 
-            SizedBox(
+            Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
@@ -163,9 +163,9 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                 ],
               ),
               child: ElevatedButton.icon(
-                onPressed: _isLoading ? null : _analyzeResume,
+                onPressed: isLoading ? null : _analyzeResume,
                 style: ElevatedButton.styleFrom(elevation: 0),
-                icon: _isLoading
+                icon: isLoading
                     ? const SizedBox(
                         height: 18,
                         width: 18,
@@ -197,11 +197,12 @@ class _SectionLabel extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 28,
-          height: 28,
-          decoration: const BoxDecoration(
-            color: Color(0xFF4F46E5),
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: const Color(0xFF3382EC),
             shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
           ),
           child: Center(
             child: Text(number,

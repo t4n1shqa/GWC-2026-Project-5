@@ -85,7 +85,7 @@ class ResultsScreen extends ConsumerWidget {
 
             // Suggestions
             _SectionTitle(
-                icon: Icons.lightbulb_rounded,
+                icon: null,
                 title: 'Suggestions',
                 color: Colors.amber[700]!),
             const SizedBox(height: 10),
@@ -96,7 +96,7 @@ class ResultsScreen extends ConsumerWidget {
             _SectionTitle(
                 icon: Icons.check_circle_rounded,
                 title: 'Keywords Found',
-                color: Colors.green),
+                color: Color(0xFF3382EC)),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -111,7 +111,7 @@ class ResultsScreen extends ConsumerWidget {
             _SectionTitle(
                 icon: Icons.cancel_rounded,
                 title: 'Keywords Missing',
-                color: Colors.red),
+                color: Color(0xFF3382EC)),
             const SizedBox(height: 10),
             Wrap(
               spacing: 8,
@@ -158,7 +158,7 @@ class ResultsScreen extends ConsumerWidget {
 }
 
 class _SectionTitle extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
   final String title;
   final Color color;
 
@@ -170,8 +170,10 @@ class _SectionTitle extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 8),
+        if (icon != null) ...[
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 8),
+        ],
         Text(title,
             style: const TextStyle(
                 fontSize: 17,
@@ -196,7 +198,7 @@ class _SuggestionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Color (0xFFE8F5FF),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: Color(0xFF3382EC)),
+        border: Border.all(color: Color(0xFF3382EC), width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,10 +229,8 @@ class _KeywordChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: found ? Colors.green[50] : Colors.red[50],
+        color: found ? Color (0xFFCBEAFF) : Color (0xFFCBEAFF),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(
-            color: found ? Color (0xFF3382EC) : Color (0xFF3382EC)),
       ),
       child: Text(
         label,
