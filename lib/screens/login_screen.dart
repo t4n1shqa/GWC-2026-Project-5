@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 
@@ -75,24 +76,20 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 40),
               // Header
-              const Icon(
-                Icons.description_rounded,
-                size: 48,
-                color: Color(0xFF4F46E5),
-              ),
+              SvgPicture.asset('assets/icons/logo.svg', width: 96, height: 96),
               const SizedBox(height: 16),
               const Text(
                 'Welcome back',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E1B4B),
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 6),
               const Text(
                 'Log in to continue',
-                style: TextStyle(fontSize: 15, color: Colors.grey),
+                style: TextStyle(fontSize: 15, color: Colors.black),
               ),
               const SizedBox(height: 36),
 
@@ -194,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Don't have an account? ",
-                      style: TextStyle(color: Colors.grey)),
+                      style: TextStyle(color: Colors.black)),
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
@@ -203,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       'Sign up',
                       style: TextStyle(
-                        color: Color(0xFF4F46E5),
+                        color: Color(0xFF3382EC),
                         fontWeight: FontWeight.bold,
                       ),
                     ),

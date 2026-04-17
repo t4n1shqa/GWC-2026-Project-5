@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../providers/resume_provider.dart';
@@ -79,7 +80,7 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
     final isLoading = state.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Analyze Resume'),  bottom: PreferredSize(
+      appBar: AppBar(title: const Text('Analyze Resume'), leading: _backButton(context),  bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
         color: const Color(0xFFCBEAFF),
@@ -103,22 +104,18 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
                     color: _selectedFileName != null
-                        ? const Color(0xFF4F46E5)
+                        ? const Color(0xFF3382EC)
                         : Colors.grey[300]!,
                     width: _selectedFileName != null ? 2 : 1,
                   ),
                 ),
                 child: Column(
                   children: [
-                    Icon(
-                      _selectedFileName != null
-                          ? Icons.check_circle_rounded
-                          : Icons.upload_file_rounded,
-                      size: 44,
-                      color: _selectedFileName != null
-                          ? const Color(0xFF4F46E5)
-                          : Colors.grey[400],
-                    ),
+                    _selectedFileName != null
+                        ? const Icon(Icons.check_circle_rounded,
+                            size: 44, color: Color(0xFF3382EC))
+                        : SvgPicture.asset('assets/icons/upload.svg',
+                            width: 44, height: 44),
                     const SizedBox(height: 10),
                     Text(
                       _selectedFileName ?? 'Tap to upload PDF',
@@ -126,14 +123,14 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: _selectedFileName != null
-                            ? const Color(0xFF4F46E5)
+                            ? const Color(0xFF3382EC)
                             : Colors.grey[600],
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _selectedFileName != null ? 'Tap to change file' : 'PDF files only',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: 12, color: Colors.black),
                     ),
                   ],
                 ),
@@ -186,6 +183,19 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
 }
 
 // _SectionLabel widget stays exactly the same as before
+Widget _backButton(BuildContext context) => IconButton(
+  icon: Transform.flip(
+    flipX: true,
+    child: SvgPicture.asset(
+      'assets/icons/arrow.svg',
+      width: 20,
+      height: 20,
+      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+    ),
+  ),
+  onPressed: () => Navigator.maybePop(context),
+);
+
 class _SectionLabel extends StatelessWidget {
   final String number;
   final String title;
@@ -208,7 +218,7 @@ class _SectionLabel extends StatelessWidget {
             child: Text(number,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 13,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold)),
           ),
         ),
@@ -217,7 +227,7 @@ class _SectionLabel extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E1B4B))),
+                color: Colors.black)),
       ],
     );
   }
