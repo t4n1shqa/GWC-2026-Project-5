@@ -29,10 +29,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3382EC)),
         useMaterial3: true,
          textTheme: GoogleFonts.poppinsTextTheme(),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF3382EC),
+        appBarTheme: AppBarTheme(
+          backgroundColor: const Color(0xFF3382EC),
           foregroundColor: Colors.white,
           elevation: 0,
+          titleTextStyle: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

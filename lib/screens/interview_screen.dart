@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 // TODO (Member 3): Wire up AiService.generateInterviewQuestions() here
 // TODO (Member 3): Wire up AiService.getAnswerFeedback() after each answer
 
 class InterviewScreen extends StatefulWidget {
-  const InterviewScreen({super.key});
+  final Map<String, dynamic>? historyData;
+
+  const InterviewScreen({super.key, this.historyData});
 
   @override
   State<InterviewScreen> createState() => _InterviewScreenState();
@@ -123,6 +126,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mock Interview'),
+        leading: _backButton(context),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4),
           child: Container(
@@ -132,40 +136,81 @@ class _InterviewScreenState extends State<InterviewScreen> {
         ),
       ),
       backgroundColor: Colors.grey[50],
-      body: _sessionStarted ? _buildSession() : _buildSetup(),
+      body: widget.historyData != null ? _buildReplay() : _sessionStarted ? _buildSession() : _buildSetup(),
     );
   }
 
-  Widget _buildSetup() {
+  Widget _buildReplay() {
+    final sessions = List<Map<String, dynamic>>.from(
+      widget.historyData!['sessions'] ?? [],
+    );
+    if (sessions.isEmpty) {
+      return const Center(child: Text('No session data available.'));
+    }
+    final session = sessions[_viewingIndex];
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Full-width banner
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
             color: Color(0xFFCBEAFF),
-            border: Border(
-              bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5),
-            ),
+            border: Border(bottom: BorderSide(color: Color(0xFFE8F5FF), width: 5)),
           ),
-          child: const Row(
+          child: Column(
             children: [
-              Icon(Icons.mic_rounded, color: Color(0xFF3382EC), size: 28),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('AI Mock Interview',
-                        style: TextStyle(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(sessions.length, (i) {
+                  final isActive = i == _viewingIndex;
+                  return GestureDetector(
+                    onTap: () => setState(() => _viewingIndex = i),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isActive ? const Color(0xFF3382EC) : const Color(0xFFCBEAFF),
+                        border: isActive ? null : Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                        boxShadow: isActive ? null : const [
+                          BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 3), blurRadius: 0),
+                          BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -3), blurRadius: 0),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${i + 1}',
+                          style: TextStyle(
+                            color: isActive ? Colors.white : const Color(0xFF3382EC),
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E1B4B))),
-                    Text('5 questions tailored to your target role',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                session['question'] as String,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black, height: 1.5),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Overall Score  ',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
+                  ...List.generate(5, (i) => Icon(
+                    i < (session['overall_score'] as int) ? Icons.star_rounded : Icons.star_border_rounded,
+                    color: const Color(0xFF3382EC),
+                    size: 24,
+                  )),
+                ],
               ),
             ],
           ),
@@ -177,57 +222,131 @@ class _InterviewScreenState extends State<InterviewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-
-                const Text('Job Title *',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _jobTitleController,
-                  decoration: const InputDecoration(
-                    hintText: 'e.g. Software Engineer Intern',
-                    prefixIcon: Icon(Icons.work_outline),
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                const Text('Job Description (optional)',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: _jobDescController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    hintText: 'Paste job description for more tailored questions...',
-                  ),
-                ),
-                const SizedBox(height: 28),
-
+                const Text('Your Answer', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5FF),
                     borderRadius: BorderRadius.circular(50),
-                    boxShadow: const [
-                      BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
-                      BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
-                    ],
+                    border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
                   ),
-                  child: ElevatedButton.icon(
-                    onPressed: _isLoading ? null : _startSession,
-                    style: ElevatedButton.styleFrom(elevation: 0),
-                    icon: _isLoading
-                        ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.play_arrow_rounded),
-                    label: Text(
-                      _isLoading ? 'Generating questions...' : 'Start Interview',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
+                  child: Text(session['answer'] as String, style: const TextStyle(fontSize: 13, height: 1.5)),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5FF),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
                   ),
+                  child: Text(session['response'] as String, style: const TextStyle(fontSize: 13, height: 1.5)),
+                ),
+                const SizedBox(height: 12),
+                ...List.generate(
+                  (session['items'] as List).length,
+                  (i) {
+                    final item = (session['items'] as List)[i] as Map;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(color: const Color(0xFFCBEAFF), borderRadius: BorderRadius.circular(50)),
+                            child: Text('${i + 1}  ${item['label']}',
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            decoration: BoxDecoration(color: const Color(0xFFCBEAFF), borderRadius: BorderRadius.circular(50)),
+                            child: Row(
+                              children: List.generate(5, (s) => Icon(
+                                s < (item['score'] as int) ? Icons.star_rounded : Icons.star_border_rounded,
+                                color: const Color(0xFF3382EC),
+                                size: 18,
+                              )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5FF),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                  ),
+                  child: Text(session['feedback'] as String, style: const TextStyle(fontSize: 13, height: 1.5)),
                 ),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSetup() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionLabel(number: '1', title: 'Job Title'),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _jobTitleController,
+            decoration: const InputDecoration(
+              hintText: 'e.g. Software Engineer Intern',
+              prefixIcon: Icon(Icons.work_outline),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          _SectionLabel(number: '2', title: 'Job Description (optional)'),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _jobDescController,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: 'Paste job description for more tailored questions...',
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              boxShadow: const [
+                BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 4), blurRadius: 0),
+                BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -4), blurRadius: 0),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : _startSession,
+              style: ElevatedButton.styleFrom(elevation: 0),
+              icon: _isLoading
+                  ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.play_arrow_rounded),
+              label: Text(
+                _isLoading ? 'Generating questions...' : 'Start Interview',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -268,19 +387,12 @@ class _InterviewScreenState extends State<InterviewScreen> {
                       height: 32,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isActive
-                            ? const Color(0xFF3382EC)
-                            : isPast
-                                ? const Color(0xFFCBEAFF)
-                                : Colors.white,
-                        border: isPast ? null : Border.all(color: const Color(0xFF3382EC), width: 1.5),
-                        boxShadow: isPast
-                            ? const [
-                                BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 3), blurRadius: 0),
-                                BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -3), blurRadius: 0),
-                              ]
-                            : null,
-                      ),
+                              color: isActive ? const Color(0xFF3382EC) : const Color(0xFFCBEAFF),
+                             border: isActive ? null : Border.all(color: const Color(0xFF3382EC), width: 1.5),
+                             boxShadow: isActive ? null : const [
+                               BoxShadow(color: Color(0xFF7BBFEE), offset: Offset(0, 3), blurRadius: 0),
+                               BoxShadow(color: Color(0xFFEEF8FF), offset: Offset(0, -3), blurRadius: 0),
+                             ],),
                       child: Center(
                         child: Text(
                           '${i + 1}',
@@ -303,7 +415,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                 style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E1B4B),
+                    color: Colors.black,
                     height: 1.5),
               ),
               // Overall score — shown after feedback is returned
@@ -313,7 +425,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Overall Score  ',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E1B4B))),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
                     ...List.generate(5, (i) => Icon(
                       i < (viewedFeedback['overall_score'] as int)
                           ? Icons.star_rounded
@@ -587,6 +699,56 @@ class _InterviewScreenState extends State<InterviewScreen> {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+Widget _backButton(BuildContext context) => IconButton(
+  icon: Transform.flip(
+    flipX: true,
+    child: SvgPicture.asset(
+      'assets/icons/arrow.svg',
+      width: 20,
+      height: 20,
+      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+    ),
+  ),
+  onPressed: () => Navigator.maybePop(context),
+);
+
+class _SectionLabel extends StatelessWidget {
+  final String number;
+  final String title;
+
+  const _SectionLabel({required this.number, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: const Color(0xFF3382EC),
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFF3382EC), width: 1.5),
+          ),
+          child: Center(
+            child: Text(number,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(title,
+            style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: Colors.black)),
       ],
     );
   }

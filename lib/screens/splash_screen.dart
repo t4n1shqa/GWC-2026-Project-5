@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'login_screen.dart';
 
 // TODO (Member 2): Replace this with real auth state check using Firebase
@@ -36,32 +37,20 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: const Icon(
-                Icons.description_rounded,
-                size: 50,
-                color: Color(0xFF4F46E5),
-              ),
-            ),
+            SvgPicture.asset('assets/icons/logo.svg', width: 180, height: 180),
             const SizedBox(height: 20),
             const Text(
               'Resume Coach',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 30,
+                fontSize: 33,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             const Text(
               'AI-Powered Career Tools',
-              style: TextStyle(color: Colors.white70, fontSize: 15),
+              style: TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 40),
             const CircularProgressIndicator(color: Colors.white),

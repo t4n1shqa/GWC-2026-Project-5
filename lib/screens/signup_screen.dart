@@ -111,13 +111,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E1B4B),
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 6),
               const Text(
                 'Start your career journey',
-                style: TextStyle(fontSize: 15, color: Colors.grey),
+                style: TextStyle(fontSize: 15, color: Colors.black),
               ),
               const SizedBox(height: 36),
 
@@ -222,7 +222,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Already have an account? ',
-                      style: TextStyle(color: Colors.grey)),
+                      style: TextStyle(color: Colors.black)),
                   GestureDetector(
                     onTap: () => Navigator.pushReplacement(
                       context,
@@ -231,7 +231,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: const Text(
                       'Log in',
                       style: TextStyle(
-                        color: Color(0xFF4F46E5),
+                        color: Color(0xFF3382EC),
                         fontWeight: FontWeight.bold,
                       ),
                     ),

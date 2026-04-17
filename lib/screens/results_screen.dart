@@ -1,35 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/resume_provider.dart';
 
 class ResultsScreen extends ConsumerWidget {
-  const ResultsScreen({super.key});
+  /// Pass [historyData] to show a saved result directly without using the provider.
+  final Map<String, dynamic>? historyData;
+
+  const ResultsScreen({super.key, this.historyData});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(resumeProvider);
+    final int score;
+    final List<String> suggestions;
+    final List<String> keywordsFound;
+    final List<String> keywordsMissing;
 
-    // Show loading spinner
-    if (state.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+    if (historyData != null) {
+      score = (historyData!['score'] as num?)?.toInt() ?? 0;
+      suggestions = List<String>.from(historyData!['suggestions'] ?? []);
+      keywordsFound = List<String>.from(historyData!['keywords_found'] ?? []);
+      keywordsMissing = List<String>.from(historyData!['keywords_missing'] ?? []);
+    } else {
+      final state = ref.watch(resumeProvider);
+
+      // Show loading spinner
+      if (state.isLoading) {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      // Show error
+      if (state.error != null) {
+        return Scaffold(
+          body: Center(child: Text('Error: ${state.error}')),
+        );
+      }
+
+      score = state.score;
+      suggestions = state.suggestions;
+      keywordsFound = state.keywordsFound;
+      keywordsMissing = state.keywordsMissing;
     }
-
-    // Show error
-    if (state.error != null) {
-      return Scaffold(
-        body: Center(child: Text('Error: ${state.error}')),
-      );
-    }
-
-    final score = state.score;
-    final suggestions = state.suggestions;
-    final keywordsFound = state.keywordsFound;
-    final keywordsMissing = state.keywordsMissing;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Analysis Results'),
+      appBar: AppBar(title: const Text('Analysis Results'), leading: _backButton(context),
        bottom: PreferredSize(
       preferredSize: const Size.fromHeight(4),
       child: Container(
@@ -57,7 +73,7 @@ class ResultsScreen extends ConsumerWidget {
                 Text(
                   '$score / 100',
                   style: const TextStyle(
-                      color: Color(0xFF1E1B4B),
+                      color: Colors.black,
                       fontSize: 48,
                       fontWeight: FontWeight.bold),
                 ),
@@ -157,6 +173,19 @@ class ResultsScreen extends ConsumerWidget {
   }
 }
 
+Widget _backButton(BuildContext context) => IconButton(
+  icon: Transform.flip(
+    flipX: true,
+    child: SvgPicture.asset(
+      'assets/icons/arrow.svg',
+      width: 20,
+      height: 20,
+      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+    ),
+  ),
+  onPressed: () => Navigator.maybePop(context),
+);
+
 class _SectionTitle extends StatelessWidget {
   final IconData? icon;
   final String title;
@@ -178,7 +207,7 @@ class _SectionTitle extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E1B4B))),
+                color: Colors.black)),
       ],
     );
   }
